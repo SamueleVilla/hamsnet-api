@@ -1,7 +1,21 @@
 package main
 
-import "fmt"
+import (
+	"log"
+
+	"github.com/samuelevilla/hasnet-api/api"
+	"github.com/samuelevilla/hasnet-api/config"
+)
 
 func main() {
-	fmt.Printf("ur mom %d %s\n", 1, "time")
+
+	logger := log.New(log.Writer(), "hamsnet-api", log.LstdFlags)
+
+	server := api.NewAPIServer(api.APIServerParams{
+		Host:   config.Env.SERVER_HOST,
+		Port:   config.Env.SERVER_PORT,
+		Logger: logger,
+	})
+
+	server.Start()
 }
