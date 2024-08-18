@@ -1,8 +1,8 @@
 build:
-	go build -o bin/hasnetapi cmd/main.go
+	go build -o bin/api/hasnetapi cmd/api/main.go
 
 run: build
-	./bin/hasnetapi
+	./bin/api/hasnetapi
 
 test:
 	go test -v ./...

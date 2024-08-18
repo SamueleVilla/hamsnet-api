@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	logger := log.New(log.Writer(), "hamsnet-api", log.LstdFlags)
+	logger := log.New(log.Writer(), "[hamsnet-api] -- ", log.LstdFlags)
 
 	server := api.NewAPIServer(api.APIServerParams{
 		Host:   config.Env.SERVER_HOST,
