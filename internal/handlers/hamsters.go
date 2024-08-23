@@ -92,11 +92,11 @@ func (h *HamsterHandler) HandleCreateHamsterPost(w http.ResponseWriter, r *http.
 		Content:  content,
 	}
 
-	err := h.store.CreateHamsterPost(r.Context(), post)
+	postId, err := h.store.CreateHamsterPost(r.Context(), post)
 	if err != nil {
 		httputil.WriteError(w, http.StatusInternalServerError, err.Error())
 	}
 
-	data := map[string]string{"message": "hamster post created"}
+	data := map[string]string{"postId": *postId}
 	httputil.WriteJSON(w, http.StatusCreated, data)
 }

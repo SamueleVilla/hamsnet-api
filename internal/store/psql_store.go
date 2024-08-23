@@ -40,12 +40,15 @@ func (ps *PsqlStore) FindHamsterById(ctx context.Context, id string) (*HamsterPo
 	return &hamsterPost, err
 }
 
-func (ps *PsqlStore) CreateHamsterPost(ctx context.Context, post *CreateHamsterPost) error {
-	_, err := ps.db.ExecContext(ctx, "insert into hamster_posts (user_id, content) values ($1, $2)", post.AuthorId, post.Content)
+func (ps *PsqlStore) CreateHamsterPost(ctx context.Context, post *CreateHamsterPost) (postId *string, err error) {
+	err = ps.db.QueryRowxContext(ctx, "insert into hamster_posts (user_id, content) values ($1, $2) returning id", post.AuthorId, post.Content).Scan(&postId)
 	if err != nil {
 		ps.loggger.Printf("Error creating hamster post %v", err)
-		return fmt.Errorf("error creating hamster post")
+		return nil, fmt.Errorf("error creating hamster post")
 	}
+	return postId, err
+}
 
-	return nil
+func (ps *PsqlStore) CreateUser(ctx context.Context, user *CreateUser) (userId string, err error) {
+	return
 }
