@@ -10,8 +10,13 @@ import (
 var Env = initEnviroment()
 
 type EnvType struct {
-	SERVER_PORT string
-	SERVER_HOST string
+	SERVER_PORT       string
+	SERVER_HOST       string
+	POSRGRES_USER     string
+	POSTGRES_PASSWORD string
+	POSTGRES_HOST     string
+	POSTGRES_PORT     string
+	POSTGRES_DBNAME   string
 }
 
 func initEnviroment() *EnvType {
@@ -19,8 +24,13 @@ func initEnviroment() *EnvType {
 		panic("No .env file found")
 	}
 	return &EnvType{
-		SERVER_PORT: getEnv("SERVER_PORT", "3000"),
-		SERVER_HOST: getEnv("SERVER_HOST", "localhost"),
+		SERVER_PORT:       getEnv("SERVER_PORT", "3000"),
+		SERVER_HOST:       getEnv("SERVER_HOST", "localhost"),
+		POSRGRES_USER:     getEnv("POSTGRES_USER", "postgres"),
+		POSTGRES_PASSWORD: getEnv("POSTGRES_PASSWORD", "postgres"),
+		POSTGRES_HOST:     getEnv("POSTGRES_HOST", "localhost"),
+		POSTGRES_PORT:     getEnv("POSTGRES_PORT", "5432"),
+		POSTGRES_DBNAME:   getEnv("POSTGRES_DBNAME", "postgres"),
 	}
 }
 

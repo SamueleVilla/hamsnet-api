@@ -1,0 +1,119 @@
+basePath: /api/v1
+definitions:
+  httputil.HttpError:
+    properties:
+      error:
+        type: string
+      timestamp:
+        type: string
+    type: object
+  store.HamsterPost:
+    properties:
+      author:
+        type: string
+      authorId:
+        type: string
+      commentsCount:
+        type: integer
+      content:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      imageKey:
+        type: string
+      likesCount:
+        type: integer
+    type: object
+host: hamsnet.swagger.io
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server Social Network server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Hamsnet API
+  version: "1.0"
+paths:
+  /hamsters:
+    post:
+      description: Responds with created hamster post
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HttpError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httputil.HttpError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HttpError'
+      summary: Responds with created hamster post
+      tags:
+      - feed
+  /hamsters/{id}:
+    get:
+      description: Responds with the hamster post with the given id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/store.HamsterPost'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HttpError'
+      summary: Responds with the hamster post with the given id
+      tags:
+      - feed
+  /hamsters/feed:
+    get:
+      description: Responds with a list of hamster posts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/store.HamsterPost'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HttpError'
+      summary: Responds with a list of hamster posts
+      tags:
+      - feed
+  /ping:
+    get:
+      description: Responds with a pong message
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Responds with a pong message
+      tags:
+      - ping
+swagger: "2.0"
