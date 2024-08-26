@@ -18,16 +18,17 @@ import (
 )
 
 func main() {
+	env := config.InitEnviroment()
 
 	logger := log.New(log.Writer(), "[hamsnet-api] -- ", log.LstdFlags)
-	addr := fmt.Sprintf("%s:%s", config.Env.SERVER_HOST, config.Env.SERVER_PORT)
+	addr := fmt.Sprintf("%s:%s", env.SERVER_HOST, env.SERVER_PORT)
 
 	db, err := database.NewPsql(database.PsqlConfig{
-		User:     config.Env.POSTRGRES_USER,
-		Password: config.Env.POSTGRES_PASSWORD,
-		Host:     config.Env.POSTGRES_HOST,
-		Port:     config.Env.POSTGRES_PORT,
-		DBName:   config.Env.POSTGRES_DBNAME,
+		User:     env.POSTRGRES_USER,
+		Password: env.POSTGRES_PASSWORD,
+		Host:     env.POSTGRES_HOST,
+		Port:     env.POSTGRES_PORT,
+		DBName:   env.POSTGRES_DBNAME,
 	})
 	if err != nil {
 		logger.Fatalf("Error connecting to database: %v", err)
@@ -42,8 +43,8 @@ func main() {
 		Logger: logger,
 		Handlers: []api.Handler{
 			handlers.NewPingHandler(),
-			handlers.NewHamsterHandler(store, config.Env.JWT_SECRET),
-			handlers.NewAuthHandler(store),
+			handlers.NewHamsterHandler(store, env.JWT_SECRET),
+			handlers.NewAuthHandler(store, env.JWT_SECRET),
 		},
 	})
 

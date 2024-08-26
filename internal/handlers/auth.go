@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/samuelevilla/hasnet-api/internal/config"
 	"github.com/samuelevilla/hasnet-api/internal/httputil"
 	"github.com/samuelevilla/hasnet-api/internal/store"
 	"github.com/samuelevilla/hasnet-api/internal/types"
@@ -14,12 +13,14 @@ import (
 )
 
 type AuthHandler struct {
-	store store.Store
+	store  store.Store
+	secret string
 }
 
-func NewAuthHandler(store store.Store) *AuthHandler {
+func NewAuthHandler(store store.Store, secret string) *AuthHandler {
 	return &AuthHandler{
-		store: store,
+		store:  store,
+		secret: secret,
 	}
 }
 
@@ -59,8 +60,6 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	key := config.Env.JWT_SECRET
-
 	// Create the Claims
 	roles := make([]string, len(user.Roles))
 	for i, role := range user.Roles {
@@ -80,7 +79,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		Email:    user.Email,
 		Roles:    roles,
 	}
-	tokenString, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(key))
+	tokenString, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(h.secret))
 
 	if err != nil {
 		httputil.WriteError(w, http.StatusInternalServerError, "error generating token")

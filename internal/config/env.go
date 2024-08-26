@@ -6,9 +6,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Env is a global variable that holds the enviroment variables
-var Env = initEnviroment()
-
 type EnvType struct {
 	SERVER_PORT       string
 	SERVER_HOST       string
@@ -20,7 +17,7 @@ type EnvType struct {
 	JWT_SECRET        string
 }
 
-func initEnviroment() *EnvType {
+func InitEnviroment() *EnvType {
 	if err := godotenv.Load(); err != nil {
 		panic("No .env file found")
 	}

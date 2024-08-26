@@ -41,7 +41,6 @@ func NewAPIServer(params APIServerParams) *APIServer {
 
 	// Middleware
 	router.Use(middleware.Logger)
-	router.Use(middleware.ContentCharset("utf-8"))
 
 	// Basic CORS
 	// for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
