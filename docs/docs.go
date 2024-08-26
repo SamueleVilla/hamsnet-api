@@ -41,8 +41,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/types.AuthUserResponse"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/httputil.HttpError"
                         }
@@ -246,6 +246,9 @@ const docTemplate = `{
         "types.AuthUserResponse": {
             "type": "object",
             "properties": {
+                "token": {
+                    "type": "string"
+                },
                 "user_id": {
                     "type": "string"
                 }

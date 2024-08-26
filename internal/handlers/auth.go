@@ -2,16 +2,22 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/samuelevilla/hasnet-api/internal/config"
+	"github.com/samuelevilla/hasnet-api/internal/httputil"
 	"github.com/samuelevilla/hasnet-api/internal/store"
+	"github.com/samuelevilla/hasnet-api/internal/types"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthHandler struct {
-	store *store.Store
+	store store.Store
 }
 
-func NewAuthHandler(store *store.Store) *AuthHandler {
+func NewAuthHandler(store store.Store) *AuthHandler {
 	return &AuthHandler{
 		store: store,
 	}
@@ -32,10 +38,56 @@ func (h *AuthHandler) RegisterRoutes(router chi.Router) {
 // @FormParam username string true "Username"
 // @FormParam password string true "Password"
 // @Success 200 {object} types.AuthUserResponse
-// @Failure 400 {object} httputil.HttpError
+// @Failure 401 {object} httputil.HttpError
 // @Failure 500 {object} httputil.HttpError
 // @Router /auth/login [post]
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+	usernameOrEmail := r.FormValue("usernameOrEmail")
+	password := r.FormValue("password")
+
+	// find user by username or email
+	user, err := h.store.FindUserByUsernameOrEmail(r.Context(), usernameOrEmail)
+	if err != nil {
+		httputil.WriteError(w, http.StatusUnauthorized, "invalid credentials")
+		return
+	}
+
+	// compare password
+	err = bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(password))
+	if err != nil {
+		httputil.WriteError(w, http.StatusUnauthorized, "invalid credentials")
+		return
+	}
+
+	key := config.Env.JWT_SECRET
+
+	// Create the Claims
+	roles := make([]string, len(user.Roles))
+	for i, role := range user.Roles {
+		roles[i] = role.RoleName
+	}
+	// Set the expiration time for the token 24 hours
+	// TODO: Move this to a config file
+	expirationTime := time.Now().Add(24 * time.Hour)
+	claims := types.JwtClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "hasnet-api",
+			Subject:   user.Id,
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+		},
+		UserId:   user.Id,
+		Username: user.Username,
+		Email:    user.Email,
+		Roles:    roles,
+	}
+	tokenString, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(key))
+
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "error generating token")
+		return
+	}
+
+	httputil.WriteJSON(w, http.StatusOK, types.AuthUserResponse{UserId: user.Id, Token: tokenString})
 }
 
 // HandleLogin godoc

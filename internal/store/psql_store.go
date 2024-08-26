@@ -52,3 +52,24 @@ func (ps *PsqlStore) CreateHamsterPost(ctx context.Context, post *CreateHamsterP
 func (ps *PsqlStore) CreateUser(ctx context.Context, user *CreateUser) (userId string, err error) {
 	return
 }
+
+func (ps *PsqlStore) FindUserByUsernameOrEmail(ctx context.Context, usernameOrEmail string) (*User, error) {
+	rows, err := ps.db.QueryxContext(ctx, "select * from users_view where username = $1 or email = $1", usernameOrEmail)
+	if err != nil {
+		ps.loggger.Printf("Error querying user by username or email %s %v", usernameOrEmail, err)
+		return nil, fmt.Errorf("error querying user by username or email %s", usernameOrEmail)
+	}
+	defer rows.Close()
+
+	var user User
+	var role Role
+	for rows.Next() {
+		if err := rows.Scan(&user.Id, &user.Username, &user.Email, &user.HashedPassword, &user.CreatedAt, &role.RoleName); err != nil {
+			ps.loggger.Printf("Error scanning user by username or email %s %v", usernameOrEmail, err)
+			return nil, fmt.Errorf("error scanning user by username or email %s", usernameOrEmail)
+		}
+		user.Roles = append(user.Roles, role)
+	}
+
+	return &user, nil
+}

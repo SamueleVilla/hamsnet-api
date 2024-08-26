@@ -28,6 +28,8 @@ definitions:
     type: object
   types.AuthUserResponse:
     properties:
+      token:
+        type: string
       user_id:
         type: string
     type: object
@@ -60,8 +62,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/types.AuthUserResponse'
-        "400":
-          description: Bad Request
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/httputil.HttpError'
         "500":

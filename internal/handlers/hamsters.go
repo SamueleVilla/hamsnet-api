@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -11,12 +10,14 @@ import (
 )
 
 type HamsterHandler struct {
-	store store.Store
+	store  store.Store
+	secret string
 }
 
-func NewHamsterHandler(store store.Store) *HamsterHandler {
+func NewHamsterHandler(store store.Store, secret string) *HamsterHandler {
 	return &HamsterHandler{
-		store: store,
+		store:  store,
+		secret: secret,
 	}
 }
 
@@ -27,7 +28,7 @@ func (h *HamsterHandler) RegisterRoutes(router chi.Router) {
 		r.Get("/{id}", h.HandleHamsterById)
 
 		r.Group(func(r chi.Router) {
-			r.Use(middleware.Auth)
+			r.Use(middleware.Auth(h.secret))
 			r.Post("/", h.HandleCreateHamsterPost)
 		})
 	})
@@ -81,15 +82,19 @@ func (h *HamsterHandler) HandleHamsterById(w http.ResponseWriter, r *http.Reques
 // @Router /hamsters [post]
 func (h *HamsterHandler) HandleCreateHamsterPost(w http.ResponseWriter, r *http.Request) {
 
-	userId := r.Context().Value("userId").(string)
+	user, err := httputil.ExtractUserFromContext(r.Context())
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	content := r.FormValue("content")
 	if content == "" {
 		httputil.WriteError(w, http.StatusBadRequest, "missing content")
 	}
 
-	fmt.Printf("userId from handler: %s\n", userId)
 	post := &store.CreateHamsterPost{
-		AuthorId: userId,
+		AuthorId: user.Id,
 		Content:  content,
 	}
 

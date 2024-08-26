@@ -7,6 +7,7 @@ type Store interface {
 	FindHamsterById(ctx context.Context, id string) (*HamsterPost, error)
 	CreateHamsterPost(ctx context.Context, post *CreateHamsterPost) (postId *string, err error)
 
+	FindUserByUsernameOrEmail(ctx context.Context, usernameOrEmail string) (*User, error)
 	CreateUser(ctx context.Context, user *CreateUser) (userId string, err error)
 }
 
@@ -32,9 +33,15 @@ type HamsterPost struct {
 	CreatedAt     string  `db:"created_at"`
 }
 
+type Role struct {
+	RoleName string `db:"role_name"`
+}
+
 type User struct {
-	Id        string `db:"id"`
-	Username  string `db:"username"`
-	Email     string `db:"email"`
-	CreatedAt string `db:"created_at"`
+	Id             string `db:"id"`
+	Username       string `db:"username"`
+	Email          string `db:"email"`
+	HashedPassword string `db:"hashed_password"`
+	CreatedAt      string `db:"created_at"`
+	Roles          []Role
 }

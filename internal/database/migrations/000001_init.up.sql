@@ -100,6 +100,11 @@ coalesce(hpl.likes_count , 0) as likes_count, coalesce(hpc.comments_count, 0) as
     order by hpl.likes_count desc);
 );
 
+-- Create view to get the user with the roles
+create view users_view as select u.id, u.username, u.email, u.hashed_password, u.created_at, ur.role_name from users u
+inner join user_roles ur on u.id = ur.user_id 
+
+
 
 CREATE OR REPLACE FUNCTION is_post_liked(post_id uuid, user_id uuid)
 RETURNS bool AS $$

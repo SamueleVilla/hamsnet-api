@@ -23,7 +23,7 @@ func main() {
 	addr := fmt.Sprintf("%s:%s", config.Env.SERVER_HOST, config.Env.SERVER_PORT)
 
 	db, err := database.NewPsql(database.PsqlConfig{
-		User:     config.Env.POSRGRES_USER,
+		User:     config.Env.POSTRGRES_USER,
 		Password: config.Env.POSTGRES_PASSWORD,
 		Host:     config.Env.POSTGRES_HOST,
 		Port:     config.Env.POSTGRES_PORT,
@@ -42,7 +42,8 @@ func main() {
 		Logger: logger,
 		Handlers: []api.Handler{
 			handlers.NewPingHandler(),
-			handlers.NewHamsterHandler(store),
+			handlers.NewHamsterHandler(store, config.Env.JWT_SECRET),
+			handlers.NewAuthHandler(store),
 		},
 	})
 
