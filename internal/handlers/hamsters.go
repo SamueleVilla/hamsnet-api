@@ -36,7 +36,7 @@ func (h *HamsterHandler) RegisterRoutes(router chi.Router) {
 // HandleHamstersFeed godoc
 // @Summary Responds with a list of hamster posts
 // @Description Responds with a list of hamster posts
-// @Tags feed
+// @Tags hamster posts
 // @Produce json
 // @Success 200 {object} store.HamsterPost
 // @Failure 500 {object} httputil.HttpError
@@ -53,7 +53,7 @@ func (h *HamsterHandler) HandleHamstersFeed(w http.ResponseWriter, r *http.Reque
 // HandlerHamsterById godoc
 // @Summary Responds with the hamster post with the given id
 // @Description Responds with the hamster post with the given id
-// @Tags feed
+// @Tags hamster posts
 // @Produce json
 // @Success 200 {object} store.HamsterPost
 // @Failure 500 {object} httputil.HttpError
@@ -71,9 +71,10 @@ func (h *HamsterHandler) HandleHamsterById(w http.ResponseWriter, r *http.Reques
 // HandlerCreateHamsterPost godoc
 // @Summary Responds with created hamster post
 // @Description Responds with created hamster post
-// @Tags feed
+// @Tags hamster posts
 // @Produce json
-// @Success 200 {object} map[string]string
+// @FormParam content string true "Content"
+// @Success 200 {object} types.CreateHamsterResponse
 // @Failure 401 {object} httputil.HttpError
 // @Failure 400 {object} httputil.HttpError
 // @Failure 500 {object} httputil.HttpError

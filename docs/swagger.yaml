@@ -26,6 +26,16 @@ definitions:
       likesCount:
         type: integer
     type: object
+  types.AuthUserResponse:
+    properties:
+      user_id:
+        type: string
+    type: object
+  types.CreateHamsterResponse:
+    properties:
+      post_id:
+        type: string
+    type: object
 host: hamsnet.swagger.io
 info:
   contact:
@@ -40,6 +50,48 @@ info:
   title: Hamsnet API
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      description: Responds with user id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.AuthUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HttpError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HttpError'
+      summary: Responds with user id
+      tags:
+      - auth
+  /auth/register:
+    post:
+      description: Responds with user id
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/types.AuthUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HttpError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HttpError'
+      summary: Responds with user id
+      tags:
+      - auth
   /hamsters:
     post:
       description: Responds with created hamster post
@@ -49,9 +101,7 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/types.CreateHamsterResponse'
         "400":
           description: Bad Request
           schema:
@@ -66,7 +116,7 @@ paths:
             $ref: '#/definitions/httputil.HttpError'
       summary: Responds with created hamster post
       tags:
-      - feed
+      - hamster posts
   /hamsters/{id}:
     get:
       description: Responds with the hamster post with the given id
@@ -83,7 +133,7 @@ paths:
             $ref: '#/definitions/httputil.HttpError'
       summary: Responds with the hamster post with the given id
       tags:
-      - feed
+      - hamster posts
   /hamsters/feed:
     get:
       description: Responds with a list of hamster posts
@@ -100,7 +150,7 @@ paths:
             $ref: '#/definitions/httputil.HttpError'
       summary: Responds with a list of hamster posts
       tags:
-      - feed
+      - hamster posts
   /ping:
     get:
       description: Responds with a pong message

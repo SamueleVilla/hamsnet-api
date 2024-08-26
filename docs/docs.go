@@ -24,6 +24,70 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/login": {
+            "post": {
+                "description": "Responds with user id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Responds with user id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.AuthUserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HttpError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Responds with user id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Responds with user id",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/types.AuthUserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HttpError"
+                        }
+                    }
+                }
+            }
+        },
         "/hamsters": {
             "post": {
                 "description": "Responds with created hamster post",
@@ -31,17 +95,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "feed"
+                    "hamster posts"
                 ],
                 "summary": "Responds with created hamster post",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/types.CreateHamsterResponse"
                         }
                     },
                     "400": {
@@ -72,7 +133,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "feed"
+                    "hamster posts"
                 ],
                 "summary": "Responds with a list of hamster posts",
                 "responses": {
@@ -98,7 +159,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "feed"
+                    "hamster posts"
                 ],
                 "summary": "Responds with the hamster post with the given id",
                 "responses": {
@@ -179,6 +240,22 @@ const docTemplate = `{
                 },
                 "likesCount": {
                     "type": "integer"
+                }
+            }
+        },
+        "types.AuthUserResponse": {
+            "type": "object",
+            "properties": {
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.CreateHamsterResponse": {
+            "type": "object",
+            "properties": {
+                "post_id": {
+                    "type": "string"
                 }
             }
         }
