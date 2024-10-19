@@ -10,7 +10,7 @@ Before running this web service, make sure you have the following installed:
 - [Make Tool](https://www.gnu.org/software/make/)
 - [Golang Migrate](https://github.com/golang-migrate/migrate)
 - [Docker](https://www.docker.com/)
-- [Swgger](https://github.com/swaggo/http-swagger)
+- [Swagger](https://github.com/swaggo/http-swagger)
 
 ## Getting Started
 
