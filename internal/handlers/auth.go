@@ -99,4 +99,52 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} httputil.HttpError
 // @Router /auth/register [post]
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
+	username := r.FormValue("username")
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+
+	if username == "" || email == "" || password == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "missing required fields")
+		return
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "error hashing password")
+		return
+	}
+
+	createUser := &store.CreateUser{
+		Username:       username,
+		Email:          email,
+		HashedPassword: string(hashedPassword),
+	}
+
+	userId, err := h.store.CreateUser(r.Context(), createUser)
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "error creating user")
+		return
+	}
+
+	// Set the expiration time for the token 24 hours
+	// TODO: Move this to a config file
+	expirationTime := time.Now().Add(24 * time.Hour)
+	claims := types.JwtClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "hasnet-api",
+			Subject:   userId,
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+		},
+		UserId:   userId,
+		Username: username,
+		Email:    email,
+	}
+	tokenString, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(h.secret))
+
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "error generating token")
+		return
+	}
+
+	httputil.WriteJSON(w, http.StatusCreated, types.AuthUserResponse{UserId: userId, Token: tokenString})
 }

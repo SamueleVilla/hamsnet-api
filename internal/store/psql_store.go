@@ -50,7 +50,14 @@ func (ps *PsqlStore) CreateHamsterPost(ctx context.Context, post *CreateHamsterP
 }
 
 func (ps *PsqlStore) CreateUser(ctx context.Context, user *CreateUser) (userId string, err error) {
-	return
+	res, err := ps.db.ExecContext(ctx, "insert into users (username, email, hashed_password) values ($1, $2, $3) returning id", user.Username, user.Email, user.HashedPassword)
+	if err != nil {
+		ps.loggger.Printf("Error creating user %v", err)
+		return "", fmt.Errorf("error creating user")
+	}
+
+	id, err := res.LastInsertId()
+	return fmt.Sprintf("%d", id), err
 }
 
 func (ps *PsqlStore) FindUserByUsernameOrEmail(ctx context.Context, usernameOrEmail string) (*User, error) {
